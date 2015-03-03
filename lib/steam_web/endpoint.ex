@@ -79,6 +79,10 @@ defmodule SteamWeb.Endpoint do
       defp handle_response(%Response{status_code: 200, body: %{"response" => %{"result" => "OK"} = response}}) do
         {:ok, Map.fetch!(response, "params")}
       end
+      defp handle_response(%Response{status_code: 200, body: %{"response" => %{"result" => "Failure"} = response}}) do
+        error = Map.fetch!(response, "error")
+        {:error, {error["errorcode"], error["errordesc"]}}
+      end
       defp handle_response(%Response{status_code: 200, body: %{"response" => %{"params" => params}}}) do
         {:ok, params}
       end
