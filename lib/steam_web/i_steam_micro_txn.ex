@@ -19,8 +19,7 @@ defmodule SteamWeb.ISteamMicroTXN do
     base_query = Keyword.take(opts, [:usersession, :ipaddress])
       |> Keyword.merge(defaults)
       |> build_query()
-    post!("InitTxn/V0002", base_query <> "&" <> format_items(items))
-      |> handle_response()
+    post("InitTxn/V0002", base_query <> "&" <> format_items(items))
   end
 
   @doc """
@@ -28,8 +27,7 @@ defmodule SteamWeb.ISteamMicroTXN do
   """
   @spec finalize_txn(integer, integer) :: Endpoint.response
   def finalize_txn(app_id, order_id) do
-    post!("FinalizeTxn/V0001", build_query(orderid: order_id, appid: app_id))
-      |> handle_response()
+    post("FinalizeTxn/V0001", build_query(orderid: order_id, appid: app_id))
   end
 
   @doc """
@@ -40,8 +38,7 @@ defmodule SteamWeb.ISteamMicroTXN do
     query = Keyword.take(opts, [:ipaddress])
       |> Keyword.merge([steamid: steam_id])
       |> build_query()
-    get!("GetUserInfo/V0001?#{query}")
-      |> handle_response()
+    get("GetUserInfo/V0001?#{query}")
   end
 
   @doc """
@@ -49,8 +46,7 @@ defmodule SteamWeb.ISteamMicroTXN do
   """
   @spec query_txn(integer, integer) :: Endpoint.response
   def query_txn(app_id, order_id) do
-    get!("QueryTxn/V0001?#{build_query(appid: app_id, orderid: order_id)}")
-      |> handle_response()
+    get("QueryTxn/V0001?#{build_query(appid: app_id, orderid: order_id)}")
   end
 
   @doc """
@@ -58,8 +54,7 @@ defmodule SteamWeb.ISteamMicroTXN do
   """
   @spec refund_txn(integer, integer) :: Endpoint.response
   def refund_txn(app_id, order_id) do
-    post!("RefundTxn/V0001?", build_query(appid: app_id, orderid: order_id))
-      |> handle_response()
+    post("RefundTxn/V0001?", build_query(appid: app_id, orderid: order_id))
   end
 
   #
