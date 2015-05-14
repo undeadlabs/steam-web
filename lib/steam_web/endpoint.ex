@@ -105,6 +105,24 @@ defmodule SteamWeb.Endpoint do
         request(method, url, body, headers, options, max_retries, 0)
       end
 
+      def handle_response(%Response{status_code: 200, body: %{"response" => %{"result" => "OK"} = response}}) do
+        {:ok, Map.fetch!(response, "params")}
+      end
+      def handle_response(%Response{status_code: 200, body: %{"response" => %{"result" => "Failure"} = response}}) do
+        error = Map.fetch!(response, "error")
+        {:error, {error["errorcode"], error["errordesc"]}}
+      end
+      def handle_response(%Response{status_code: 200, body: %{"response" => %{"params" => params}}}) do
+        {:ok, params}
+      end
+      def handle_response(%Response{status_code: 200, body: %{"response" => %{"error" => error}}}) do
+        {:error, {:api_error, {error["errorcode"], error["errordesc"]}}}
+      end
+      def handle_response(%Response{status_code: 200, body: body}) do
+        {:ok, body}
+      end
+      def handle_response(%Response{status_code: code, body: body}), do: {:error, {:http_error, code, body}}
+
       #
       # Private
       #
@@ -131,24 +149,7 @@ defmodule SteamWeb.Endpoint do
         end
       end
 
-      #
-      # Handlers
-      #
-
-      defp handle_response(%Response{status_code: 200, body: %{"response" => %{"result" => "OK"} = response}}) do
-        {:ok, Map.fetch!(response, "params")}
-      end
-      defp handle_response(%Response{status_code: 200, body: %{"response" => %{"result" => "Failure"} = response}}) do
-        error = Map.fetch!(response, "error")
-        {:error, {error["errorcode"], error["errordesc"]}}
-      end
-      defp handle_response(%Response{status_code: 200, body: %{"response" => %{"params" => params}}}) do
-        {:ok, params}
-      end
-      defp handle_response(%Response{status_code: 200, body: %{"response" => %{"error" => error}}}) do
-        {:error, {:api_error, {error["errorcode"], error["errordesc"]}}}
-      end
-      defp handle_response(%Response{status_code: code, body: body}), do: {:error, {:http_error, code, body}}
+      defoverridable [handle_response: 1]
     end
   end
 end

@@ -4,4 +4,5 @@ config :logger,
   level: :debug
 
 config :steam_web,
-  sandbox: true
+  sandbox: true,
+  api_key: System.get_env("STEAM_API_KEY")
