@@ -8,7 +8,7 @@ defmodule SteamWeb.ISteamUser do
   use SteamWeb.Endpoint, interface: "ISteamUser"
   alias HTTPoison.Response
 
-  def check_app_ownership(app_id, steam_id) do
+  def check_app_ownership(steam_id, app_id) do
     query = build_query(appid: app_id, steamid: steam_id)
     case get("CheckAppOwnership/v1?#{query}") do
       {:ok, %{"appownership" => appownership}} ->
@@ -17,11 +17,10 @@ defmodule SteamWeb.ISteamUser do
     end
   end
 
-  def get_app_price_info(app_ids, steam_id) when is_list(app_ids) do
-    Enum.join(app_ids, ",")
-    |> get_app_price_info(steam_id)
+  def get_app_price_info(steam_id, app_ids) when is_list(app_ids) do
+    get_app_price_info(steam_id, Enum.join(app_ids, ","))
   end
-  def get_app_price_info(app_id, steam_id) do
+  def get_app_price_info(steam_id, app_id) do
     query = build_query(appids: app_id, steamid: steam_id)
     case get("GetAppPriceInfo/v1?#{query}") do
       {:ok, %{"price_info" => info}} ->
