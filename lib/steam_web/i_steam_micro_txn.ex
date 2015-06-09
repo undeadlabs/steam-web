@@ -13,48 +13,49 @@ defmodule SteamWeb.ISteamMicroTXN do
   See: https://partner.steamgames.com/documentation/MicroTxn#InitTxn
   """
   @spec init_txn(integer, integer, integer, binary, binary, item_list, list) :: Endpoint.response
-  def init_txn(app_id, steam_id, order_id, language, currency, items, opts \\ []) do
+  def init_txn(app_id, steam_id, order_id, language, currency, items, opts \\ [])
+    when is_integer(app_id) and is_integer(steam_id) and is_integer(order_id) do
     defaults = [appid: app_id, steamid: steam_id, orderid: order_id, itemcount: length(items), language: language,
       currency: currency]
     base_query = Keyword.take(opts, [:usersession, :ipaddress])
       |> Keyword.merge(defaults)
       |> build_query()
-    post("InitTxn/V0002", base_query <> "&" <> format_items(items))
+    post("InitTxn/v3", base_query <> "&" <> format_items(items))
   end
 
   @doc """
   See: https://partner.steamgames.com/documentation/MicroTxn#FinalizeTxn
   """
   @spec finalize_txn(integer, integer) :: Endpoint.response
-  def finalize_txn(app_id, order_id) do
-    post("FinalizeTxn/V0001", build_query(orderid: order_id, appid: app_id))
+  def finalize_txn(app_id, order_id) when is_integer(app_id) and is_integer(order_id) do
+    post("FinalizeTxn/v2", build_query(orderid: order_id, appid: app_id))
   end
 
   @doc """
   See: https://partner.steamgames.com/documentation/MicroTxn#GetUserInfo
   """
   @spec get_user_info(integer, list) :: Endpoint.response
-  def get_user_info(steam_id, opts \\ []) do
+  def get_user_info(steam_id, opts \\ []) when is_integer(steam_id) do
     query = Keyword.take(opts, [:ipaddress])
       |> Keyword.merge([steamid: steam_id])
       |> build_query()
-    get("GetUserInfo/V0001?#{query}")
+    get("GetUserInfo/v2?#{query}")
   end
 
   @doc """
   See: https://partner.steamgames.com/documentation/MicroTxn#QueryTxn
   """
   @spec query_txn(integer, integer) :: Endpoint.response
-  def query_txn(app_id, order_id) do
-    get("QueryTxn/V0001?#{build_query(appid: app_id, orderid: order_id)}")
+  def query_txn(app_id, order_id) when is_integer(app_id) and is_integer(order_id) do
+    get("QueryTxn/v2?#{build_query(appid: app_id, orderid: order_id)}")
   end
 
   @doc """
   See: https://partner.steamgames.com/documentation/MicroTxn#RefundTxn
   """
   @spec refund_txn(integer, integer) :: Endpoint.response
-  def refund_txn(app_id, order_id) do
-    post("RefundTxn/V0001?", build_query(appid: app_id, orderid: order_id))
+  def refund_txn(app_id, order_id) when is_integer(app_id) and is_integer(order_id) do
+    post("RefundTxn/v2?", build_query(appid: app_id, orderid: order_id))
   end
 
   #
