@@ -8,7 +8,8 @@ defmodule SteamWeb.Endpoint do
   @type result_success :: {:ok, map}
   @type result_error :: {:error, {:api_error, {integer, binary}}}
   @type http_error :: {:error, {:http_error, integer, term}}
-  @type response :: result_success | result_error | http_error
+  @type connection_error :: {:error, term}
+  @type response :: result_success | result_error | http_error | connection_error
 
   defmacro __using__(opts) do
     quote location: :keep do
@@ -144,8 +145,8 @@ defmodule SteamWeb.Endpoint do
                 request(method, url, body, headers, options, max_retries, (tries + 1), error)
               response -> response
             end
-          {:error, %{reason: reason}} = error ->
-            request(method, url, body, headers, options, max_retries, (tries + 1), error)
+          {:error, %HTTPoison.Error{reason: reason}} = error ->
+            request(method, url, body, headers, options, max_retries, (tries + 1), {:error, reason})
         end
       end
 
