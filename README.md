@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/undeadlabs/steam-web.png?branch=master)](https://travis-ci.org/undeadlabs/steam-web)
 
-Steam Web API Client for the Erlang VM
+Steam [Web API](https://lab.xpaw.me/steam_api_documentation.html) Client for the Erlang VM
 
 ## Authors
 
